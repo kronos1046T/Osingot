@@ -7,23 +7,19 @@ import db
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
-
 @app.route("/")
 def index():
     return "Tervetuloa Osinkoapuvälineeseen!"
 
-
 @app.route("/register")
 def register():
     return render_template("register.html")
-
 
 @app.route("/create", methods=["POST"])
 def create():
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
-
     if password1 != password2:
         return "VIRHE: salasanat eivät ole samat"
 
@@ -41,12 +37,10 @@ def create():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-
     if request.method == "GET":
         return render_template("login.html")
-
+    
     if request.method == "POST":
-
         username = request.form["username"]
         password = request.form["password"]
 
