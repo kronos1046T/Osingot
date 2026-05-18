@@ -1,6 +1,6 @@
 import sqlite3
 from flask import Flask
-from flask import redirect, render_template, request
+from flask import Flask, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import config
 import db
@@ -53,5 +53,5 @@ def login():
 
 @app.route("/logout")
 def logout():
-    del session["username"]
+    session.pop("username", None)
     return redirect("/")
