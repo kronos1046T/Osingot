@@ -4,7 +4,9 @@ from flask import Flask, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import config
 import db
+
 app = Flask(__name__)
+app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
