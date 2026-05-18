@@ -1,5 +1,8 @@
 # Osingot
 
+* Sovelluksen ideana on "Dividend Capture" strategian apuväline. Käyttäjät tulevat lisäämään titokantaa osakkeita ja ETF:t, jotka ovat maksamassa osinkoa lähiaikoina.
+* Tavoitteena on tehdä sovellus johon lisätään linkit tuloraportteihin, record date:t ja maksupäivämäärät.
+* Kehityksen prosessissa tavoittelen että sovelluksessa saa olla kommentteja ja osinkohistoriaa.   
 * Käyttäjä pystyy luomaan tunnuksen ja kirjautumaan sisään sovellukseen.
 * Käyttäjä pystyy lisäämään sovellukseen tietokohteita. Lisäksi käyttäjä pystyy muokkaamaan ja poistamaan lisäämiään tietokohteita.
 * Käyttäjä näkee sovellukseen lisätyt tietokohteet. Käyttäjä näkee sekä itse lisäämänsä että muiden käyttäjien lisäämät tietokohteet.
