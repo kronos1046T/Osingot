@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "Tervetuloa reseptikirjaan!" 
+    return "Tervetuloa Osinkoapuvälineeseen!" 
 
 @app.route("/register")
 def register():
@@ -30,19 +30,22 @@ def create():
         return "VIRHE: tunnus on jo varattu"
 
     return "Tunnus luotu"
-@app.route("/login", methods=["POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    username = request.form["username"]
-    password = request.form["password"]
+    if method == "GET":
+        return render_template("index.html")
+    if method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        
+        sql = "SELECT password_hash FROM users WHERE username = ?"
+        password_hash = db.query(sql, [username])[0][0]
     
-    sql = "SELECT password_hash FROM users WHERE username = ?"
-    password_hash = db.query(sql, [username])[0][0]
-
-    if check_password_hash(password_hash, password):
-        session["username"] = username
-        return redirect("/")
-    else:
-        return "VIRHE: väärä tunnus tai salasana"
+        if check_password_hash(password_hash, password):
+            session["username"] = username
+            return redirect("/")
+        else:
+            return "VIRHE: väärä tunnus tai salasana"
 
 @app.route("/logout")
 def logout():
