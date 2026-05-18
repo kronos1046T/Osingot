@@ -32,15 +32,19 @@ def create():
     return "Tunnus luotu"
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if method == "GET":
+    if request.method == "GET":
         return render_template("index.html")
-    if method == "POST":
+    if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        
+
         sql = "SELECT password_hash FROM users WHERE username = ?"
-        password_hash = db.query(sql, [username])[0][0]
-    
+        result = db.query(sql, [username])
+
+        if len(result) == 0:
+            return "VIRHE: väärä tunnus tai salasana"
+        password_hash = result[0][0]
+
         if check_password_hash(password_hash, password):
             session["username"] = username
             return redirect("/")
