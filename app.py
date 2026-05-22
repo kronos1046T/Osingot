@@ -19,6 +19,22 @@ def new_position():
 def register():
     return render_template("register.html")
 
+@app.route("/create_position", methods=["POST"])
+def create_position():
+    stock_name = request.form["stock_name"]
+    ex_dividend_date = request.form["ex_dividend_date"]
+    record_date = request.form["record_date"]
+    payment_date = request.form["payment_date"]
+    description = request.form["description"]
+    user_id = session["user_id"]
+
+    sql = """INSERT INTO positions (user_id, stock_name, 
+             ex_dividend_date, record_date, 
+             payment_date, description) VALUES (?, ?, ?, ?, ?, ?)"""
+    db.execute(sql, [user_id, stock_name, ex_dividend_date, record_date, payment_date, description])
+
+    return redirect("/")
+
 @app.route("/create", methods=["POST"])
 def create():
     username = request.form["username"]
@@ -48,15 +64,17 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        sql = "SELECT password_hash FROM users WHERE username = ?"
+        sql = "SELECT id, password_hash FROM users WHERE username = ?"
         result = db.query(sql, [username])
 
         if len(result) == 0:
             return "VIRHE: väärä tunnus tai salasana"
 
-        password_hash = result[0][0]
+        user_id = result[0][0]
+        password_hash = result[0][1]
 
         if check_password_hash(password_hash, password):
+            session["user_id"] = user_id
             session["username"] = username
             return redirect("/")
 
@@ -65,5 +83,6 @@ def login():
 
 @app.route("/logout")
 def logout():
+    session.pop("user_id", None)
     session.pop("username", None)
     return redirect("/")
