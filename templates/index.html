@@ -23,6 +23,14 @@
     <p>
     <a href="/new_position">Uusi kohta</a>
   </p>
+  <h2>Osake lista</h2>
+  <ul>
+    {% for position in positions %}
+    <li>
+      <a href="/positions/{{ position.id }}">{{ position.stock_name }}</a>
+    </li>
+    {% endfor %}
+  </ul>
 </body>
 
 </html>

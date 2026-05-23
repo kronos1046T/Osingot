@@ -3,13 +3,20 @@ from flask import Flask, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import config
 import db
+import positions
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    all_positions = positions.get_positions()
+    return render_template("index.html", positions=all_positions)
+
+@app.route("/positions/<int:position_id>")
+def show_position(position_id):
+    position = positions.get_position(position_id)
+    return render_template("show_position.html", position=position)
 
 @app.route("/new_position")
 def new_position():
@@ -28,10 +35,7 @@ def create_position():
     description = request.form["description"]
     user_id = session["user_id"]
 
-    sql = """INSERT INTO positions (user_id, stock_name, 
-             ex_dividend_date, record_date, 
-             payment_date, description) VALUES (?, ?, ?, ?, ?, ?)"""
-    db.execute(sql, [user_id, stock_name, ex_dividend_date, record_date, payment_date, description])
+    positions.add_position(user_id, stock_name, ex_dividend_date, record_date, payment_date, description)
 
     return redirect("/")
 
