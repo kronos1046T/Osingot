@@ -22,6 +22,11 @@ def show_position(position_id):
 def new_position():
     return render_template("new_position.html")
 
+@app.route("/edit_position/<int:position_id>")
+def edit_position(position_id):
+    position = positions.get_position(position_id)
+    return render_template("edit_position.html", position=position)
+
 @app.route("/register")
 def register():
     return render_template("register.html")
@@ -38,6 +43,19 @@ def create_position():
     positions.add_position(user_id, stock_name, ex_dividend_date, record_date, payment_date, description)
 
     return redirect("/")
+
+@app.route("/update_position", methods=["POST"])
+def update_position():
+    position_id = request.form["position_id"]
+    stock_name = request.form["stock_name"]
+    ex_dividend_date = request.form["ex_dividend_date"]
+    record_date = request.form["record_date"]
+    payment_date = request.form["payment_date"]
+    description = request.form["description"]
+
+    positions.update_position(position_id, stock_name, ex_dividend_date, record_date, payment_date, description)
+
+    return redirect("/positions/" + str(position_id))
 
 @app.route("/create", methods=["POST"])
 def create():

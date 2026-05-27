@@ -13,14 +13,28 @@ def get_positions():
 def get_position(position_id):
     sql = """
         SELECT
+            positions.id,
             positions.stock_name,
             positions.ex_dividend_date,
             positions.record_date,
             positions.payment_date,
             positions.description,
+            users.id AS user_id,
             users.username
         FROM positions
         JOIN users ON positions.user_id = users.id
         WHERE positions.id = ?
     """
     return db.query(sql, [position_id])[0]
+
+def update_position(position_id, stock_name, ex_dividend_date, record_date, payment_date, description):
+    sql = """
+        UPDATE positions
+        SET stock_name = ?,
+            ex_dividend_date = ?,
+            record_date = ?,
+            payment_date = ?,
+            description = ?
+        WHERE id = ?
+        """
+    db.execute(sql, [stock_name, ex_dividend_date, record_date, payment_date, description, position_id])

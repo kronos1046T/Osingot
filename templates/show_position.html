@@ -7,6 +7,14 @@
 
 <body>
   <h1>{{ position.stock_name }}</h1>
+ {% if session["user_id"] == position.user_id %}
+  <p>
+    <a href="/edit_position/{{ position.id }}">Muokkaa</a>
+  </p>
+  {% else %}
+  <p>Et ole kirjautunut.</p>
+  {% endif %}
+
 
   <p>Ex-dividend date: {{ position.ex_dividend_date }}</p>
    <p>Record date: {{ position.record_date }}</p>
