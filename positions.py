@@ -38,3 +38,7 @@ def update_position(position_id, stock_name, ex_dividend_date, record_date, paym
         WHERE id = ?
         """
     db.execute(sql, [stock_name, ex_dividend_date, record_date, payment_date, description, position_id])
+
+def delete_position(position_id):
+    sql = "DELETE FROM positions WHERE id = ?"
+    db.execute(sql, [position_id])

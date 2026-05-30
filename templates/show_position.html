@@ -10,6 +10,7 @@
  {% if session["user_id"] == position.user_id %}
   <p>
     <a href="/edit_position/{{ position.id }}">Muokkaa</a>
+    <a href="/delete_position/{{ position.id }}">Poista</a>
   </p>
   {% else %}
   <p>Et ole kirjautunut.</p>

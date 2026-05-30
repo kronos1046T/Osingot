@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>{{ position.stock_name }}</title>
+</head>
+
+<body>
+    <h1>Ilmoituksen poisto</h1>
+    <p>Ilmoitus: {{position.stock_name}}</p>
+    <p>Haluatko varmasti poistaa tämän ilmoituksen?</p>
+    <form action="/delete_position/{{ position.id }}" method="post">
+        <input type="submit" name="delete" value="Poista kohta">
+        <input type="submit" name="back" value="Palaa takaisin">
+    </form>
+</body>
+
+</html>

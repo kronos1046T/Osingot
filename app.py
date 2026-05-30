@@ -76,6 +76,18 @@ def create():
 
     return "Tunnus luotu"
 
+@app.route("/delete_position/<int:position_id>", methods=["GET", "POST"])
+def delete_position(position_id):
+    if request.method == "GET":
+        position = positions.get_position(position_id)
+        return render_template("delete_position.html", position=position)
+    if request.method == "POST":
+        if "delete" in request.form:
+            positions.delete_position(position_id)
+            return redirect('/')
+        else:
+            return redirect("/positions/" + str(position_id))
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
