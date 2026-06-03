@@ -42,3 +42,11 @@ def update_position(position_id, stock_name, ex_dividend_date, record_date, paym
 def delete_position(position_id):
     sql = "DELETE FROM positions WHERE id = ?"
     db.execute(sql, [position_id])
+
+def find_positions(query):
+    sql = """
+        SELECT id, stock_name FROM positions
+        WHERE stock_name LIKE ? or description LIKE ?
+        ORDER BY id DESC"""
+    like = "%" + query + "%"
+    return db.query(sql, [like, like])

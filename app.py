@@ -4,7 +4,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import config
 import db
 import positions
-
+# test
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
@@ -12,6 +12,16 @@ app.secret_key = config.secret_key
 def index():
     all_positions = positions.get_positions()
     return render_template("index.html", positions=all_positions)
+
+@app.route("/find_position")
+def find_position():
+    query = request.args.get("query")
+    if query:
+        results = positions.find_positions(query)
+    else:
+        query = ""
+        results = []
+    return render_template("find_position.html", query=query, results=results)
 
 @app.route("/positions/<int:position_id>")
 def show_position(position_id):
@@ -30,6 +40,7 @@ def edit_position(position_id):
 @app.route("/register")
 def register():
     return render_template("register.html")
+
 
 @app.route("/create_position", methods=["POST"])
 def create_position():
