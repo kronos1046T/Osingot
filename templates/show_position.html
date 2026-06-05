@@ -21,7 +21,7 @@
    <p>Record date: {{ position.record_date }}</p>
    <p>Payment date: {{ position.payment_date }}</p>
    <p>Description: {{ position.description }}</p>
-   <p>Added by: {{ position.username }}</p>
+   <p>Added by: <a href="/user/{{ position.user_id }}">{{ position.username }}</a></p>
    <p>
     <a href="/">Takaisin</a>
   </p>

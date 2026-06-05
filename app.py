@@ -1,9 +1,10 @@
 import sqlite3
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, abort, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import config
 import db
 import positions
+import users
 # test
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -27,6 +28,14 @@ def find_position():
 def show_position(position_id):
     position = positions.get_position(position_id)
     return render_template("show_position.html", position=position)
+
+@app.route("/user/<int:user_id>")
+def show_user(user_id):
+    user = users.get_user(user_id)
+    if not user:
+        abort(404)
+    positions = users.get_positions_by_user(user_id)
+    return render_template("show_user.html", user=user, positions=positions)
 
 @app.route("/new_position")
 def new_position():
@@ -73,19 +82,10 @@ def create():
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
-    if password1 != password2:
-        return "VIRHE: salasanat eivät ole samat"
 
-    password_hash = generate_password_hash(password1)
+    result = users.create_user(username, password1, password2)
 
-    try:
-        sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
-        db.execute(sql, [username, password_hash])
-
-    except sqlite3.IntegrityError:
-        return "VIRHE: tunnus on jo varattu"
-
-    return "Tunnus luotu"
+    return result
 
 @app.route("/delete_position/<int:position_id>", methods=["GET", "POST"])
 def delete_position(position_id):
@@ -104,26 +104,18 @@ def delete_position(position_id):
 def login():
     if request.method == "GET":
         return render_template("login.html")
-    
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
 
-        sql = "SELECT id, password_hash FROM users WHERE username = ?"
-        result = db.query(sql, [username])
+    username = request.form["username"]
+    password = request.form["password"]
 
-        if len(result) == 0:
-            return "VIRHE: väärä tunnus tai salasana"
+    user = users.login_user(username, password)
 
-        user_id = result[0][0]
-        password_hash = result[0][1]
+    if user:
+        session["user_id"] = user["id"]
+        session["username"] = user["username"]
+        return redirect("/")
 
-        if check_password_hash(password_hash, password):
-            session["user_id"] = user_id
-            session["username"] = username
-            return redirect("/")
-
-        return "VIRHE: väärä tunnus tai salasana"
+    return "VIRHE: väärä tunnus tai salasana"
 
 
 @app.route("/logout")
