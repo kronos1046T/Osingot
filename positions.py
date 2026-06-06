@@ -1,14 +1,22 @@
 import db
 
-def add_position(user_id, stock_name, ex_dividend_date, record_date, payment_date, description):
+def add_position(user_id, stock_name, ex_dividend_date, record_date, payment_date, description, classes):
     sql = """INSERT INTO positions (user_id, stock_name, 
              ex_dividend_date, record_date, 
              payment_date, description) VALUES (?, ?, ?, ?, ?, ?)"""
-    db.execute(sql, [user_id, stock_name, ex_dividend_date, record_date, payment_date, description])
+    position_id = db.execute(sql, [user_id, stock_name, ex_dividend_date, record_date, payment_date, description])
+    
+    for field, season in classes:
+        sql = "INSERT INTO position_classes (position_id, field, season) VALUES (?, ?, ?)"
+        db.execute(sql, [position_id, field, season])
 
 def get_positions():
     sql = "SELECT id, stock_name FROM positions ORDER BY id DESC"
     return db.query(sql)
+
+def get_classes(position_id):
+    sql = "SELECT field, season FROM position_classes WHERE position_id = ?"
+    return db.query(sql, [position_id])
 
 def get_position(position_id):
     sql = """

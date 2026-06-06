@@ -15,7 +15,14 @@
   {% else %}
   <p>Et ole kirjautunut.</p>
   {% endif %}
-
+  <p> 
+    Luokat:
+    <ul>
+      {% for class in classes %}
+        <li>{{ class.field }}: {{class.season}}</li>
+      {% endfor %}
+    </ul>
+  </p>
 
   <p>Ex-dividend date: {{ position.ex_dividend_date }}</p>
    <p>Record date: {{ position.record_date }}</p>

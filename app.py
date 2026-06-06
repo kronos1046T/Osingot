@@ -27,7 +27,8 @@ def find_position():
 @app.route("/positions/<int:position_id>")
 def show_position(position_id):
     position = positions.get_position(position_id)
-    return render_template("show_position.html", position=position)
+    classes = positions.get_classes(position_id)
+    return render_template("show_position.html", position=position, classes=classes)
 
 @app.route("/user/<int:user_id>")
 def show_user(user_id):
@@ -60,7 +61,15 @@ def create_position():
     description = request.form["description"]
     user_id = session["user_id"]
 
-    positions.add_position(user_id, stock_name, ex_dividend_date, record_date, payment_date, description)
+    classes = []
+    field = request.form["field"]
+    if field:
+        classes.append(("field", field))
+    season = request.form["season"]
+    if season:
+        classes.append(("season", season))
+
+    positions.add_position(user_id, stock_name, ex_dividend_date, record_date, payment_date, description, classes)
 
     return redirect("/")
 

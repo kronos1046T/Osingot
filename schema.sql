@@ -14,3 +14,10 @@ CREATE TABLE positions (
     description TEXT,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+CREATE TABLE position_classes (
+    id INTEGER PRIMARY KEY,
+    position_id INTEGER REFERENCES positions,
+    field TEXT,
+    season TEXT
+);
