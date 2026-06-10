@@ -1,21 +1,47 @@
 import db
 
+def list_comments(db, position_id):
+    sql = """
+        SELECT
+            c.id,
+            c.content,
+            c.user_id,
+            u.username
+        FROM comments c
+        JOIN users u ON u.id = c.user_id
+        WHERE c.position_id = ?
+        ORDER BY c.id DESC
+    """
+    return db.query(sql, [position_id])
+
+def get_all_classes():
+    sql = "SELECT type, value FROM classes ORDER BY id"
+    result = db.query(sql)
+
+    classes = {}
+    for type, value in result:
+        if type not in classes:
+            classes[type] = []
+        classes[type].append(value)
+
+    return classes
+
 def add_position(user_id, stock_name, ex_dividend_date, record_date, payment_date, description, classes):
     sql = """INSERT INTO positions (user_id, stock_name, 
              ex_dividend_date, record_date, 
              payment_date, description) VALUES (?, ?, ?, ?, ?, ?)"""
     position_id = db.execute(sql, [user_id, stock_name, ex_dividend_date, record_date, payment_date, description])
     
-    for field, season in classes:
-        sql = "INSERT INTO position_classes (position_id, field, season) VALUES (?, ?, ?)"
-        db.execute(sql, [position_id, field, season])
+    for type, value in classes:
+        sql = "INSERT INTO position_classes (position_id, type, value) VALUES (?, ?, ?)"
+        db.execute(sql, [position_id, type, value])
 
 def get_positions():
     sql = "SELECT id, stock_name FROM positions ORDER BY id DESC"
     return db.query(sql)
 
 def get_classes(position_id):
-    sql = "SELECT field, season FROM position_classes WHERE position_id = ?"
+    sql = "SELECT type, value FROM position_classes WHERE position_id = ?"
     return db.query(sql, [position_id])
 
 def get_position(position_id):

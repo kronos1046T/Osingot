@@ -1,0 +1,7 @@
+<h2>Muokkaa kommenttia</h2>
+
+<form action="/update_comment/{{ comment.id }}" method="post">
+    <textarea name="content" required>{{ comment.content }}</textarea>
+    <br>
+    <input type="submit" value="Update">
+</form>

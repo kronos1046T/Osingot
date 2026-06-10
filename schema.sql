@@ -15,9 +15,24 @@ CREATE TABLE positions (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+CREATE TABLE comments (
+    id INTEGER PRIMARY KEY,
+    position_id INTEGER,
+    user_id INTEGER,
+    content TEXT,
+    FOREIGN KEY (position_id) REFERENCES positions(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE classes (
+    id INTEGER PRIMARY KEY,
+    type TEXT,
+    value TEXT
+);
+
 CREATE TABLE position_classes (
     id INTEGER PRIMARY KEY,
-    position_id INTEGER REFERENCES positions,
-    field TEXT,
-    season TEXT
+    position_id INTEGER,
+    type TEXT,
+    value TEXT
 );

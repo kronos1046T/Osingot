@@ -1,4 +1,5 @@
 import sqlite3
+from turtle import position
 from flask import Flask, abort, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import config
@@ -28,7 +29,8 @@ def find_position():
 def show_position(position_id):
     position = positions.get_position(position_id)
     classes = positions.get_classes(position_id)
-    return render_template("show_position.html", position=position, classes=classes)
+    comments = positions.list_comments(db, position_id)
+    return render_template("show_position.html", position=position, classes=classes, comments=comments)
 
 @app.route("/user/<int:user_id>")
 def show_user(user_id):
@@ -40,17 +42,47 @@ def show_user(user_id):
 
 @app.route("/new_position")
 def new_position():
-    return render_template("new_position.html")
+    classes = positions.get_all_classes()
+    return render_template("new_position.html", classes=classes)
 
 @app.route("/edit_position/<int:position_id>")
 def edit_position(position_id):
     position = positions.get_position(position_id)
     return render_template("edit_position.html", position=position)
 
+@app.route("/edit_comment/<int:comment_id>", methods=["GET"])
+def edit_comment(comment_id):
+    comment = db.query(
+        "SELECT * FROM comments WHERE id = ?",
+        [comment_id])[0]
+    if session.get("user_id") != comment["user_id"]:
+        return "Ei oikeuksia", 403
+    return render_template("edit_comment.html", comment=comment)
+
 @app.route("/register")
 def register():
     return render_template("register.html")
 
+
+@app.route("/update_comment/<int:comment_id>", methods=["POST"])
+def update_comment(comment_id):
+    content = request.form["content"]
+    comment = db.query(
+        "SELECT position_id, user_id FROM comments WHERE id = ?",
+        [comment_id])[0]
+    if session.get("user_id") != comment["user_id"]:
+        return "Ei oikeuksia", 403
+    db.execute(
+        "UPDATE comments SET content = ? WHERE id = ?",
+        [content, comment_id])
+    return redirect(f"/positions/{comment['position_id']}")
+
+@app.route("/create_comment/<int:position_id>", methods=["POST"])
+def create_comment(position_id):
+    content = request.form["content"]
+    db.execute(""" INSERT INTO comments (position_id, user_id, content) VALUES (?, ?, ?)""",
+        (position_id, session["user_id"], content))
+    return redirect(f"/positions/{position_id}")
 
 @app.route("/create_position", methods=["POST"])
 def create_position():
@@ -62,16 +94,16 @@ def create_position():
     user_id = session["user_id"]
 
     classes = []
-    field = request.form["field"]
-    if field:
-        classes.append(("field", field))
-    season = request.form["season"]
-    if season:
-        classes.append(("season", season))
-
-    positions.add_position(user_id, stock_name, ex_dividend_date, record_date, payment_date, description, classes)
-
+    for entry in request.form.getlist("classes"):
+        if entry and ":" in entry:  
+            parts = entry.split(":", 1)  
+            if len(parts) == 2:  
+                classes.append((parts[0], parts[1]))
+    
+    positions.add_position(user_id, stock_name, ex_dividend_date, 
+                          record_date, payment_date, description, classes)
     return redirect("/")
+
 
 @app.route("/update_position", methods=["POST"])
 def update_position():
@@ -95,6 +127,16 @@ def create():
     result = users.create_user(username, password1, password2)
 
     return result
+
+@app.route("/delete_comment/<int:comment_id>", methods=["GET", "POST"])
+def delete_comment(comment_id):
+    comment = db.query(
+        "SELECT user_id, position_id FROM comments WHERE id = ?",
+        [comment_id])[0]
+    if session.get("user_id") != comment["user_id"]:
+        return "Ei oikeuksia", 403
+    db.execute("DELETE FROM comments WHERE id = ?", [comment_id])
+    return redirect(f"/positions/{comment['position_id']}")
 
 @app.route("/delete_position/<int:position_id>", methods=["GET", "POST"])
 def delete_position(position_id):
