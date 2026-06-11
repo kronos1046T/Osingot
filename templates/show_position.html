@@ -1,58 +1,61 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>{{ position.stock_name }}</title>
-</head>
+{% block title %}{{ position.stock_name }}{% endblock %}
 
-<body>
-  <h1>{{ position.stock_name }}</h1>
-  {% if session.get("user_id") == position.user_id %}
-  <p>
-    <a href="/edit_position/{{ position.id }}">Muokkaa</a>
-    <a href="/delete_position/{{ position.id }}">Poista</a>
-  </p>
-  {% else %}
-  <p>Et ole kirjautunut.</p>
-  {% endif %}
-  <p>
-    Luokat:
-    <ul>
-      {% for class in classes %}
-        <li>{{ class.type }}: {{ class.value }}</li>
-      {% endfor %}
-    </ul>
-  </p>
+{% block content %}
 
-  <p>Ex-dividend date: {{ position.ex_dividend_date }}</p>
-   <p>Record date: {{ position.record_date }}</p>
-   <p>Payment date: {{ position.payment_date }}</p>
-   <p>Description: {{ position.description }}</p>
-   <p>Added by: <a href="/user/{{ position.user_id }}">{{ position.username }}</a></p>
-   
-  <h2>Kommentit</h2>
-  <form action="/create_comment/{{ position.id }}" method="post">
-      <textarea name="content" required></textarea><br>
-      <input type="submit" value="Lähetä">
-  </form>
-  <hr>
-  {% for comment in comments %}
-    <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-      <strong>
-        <a href="/user/{{ comment.user_id }}">
-          {{ comment.username }}
-        </a>
-      </strong>
-      <p>{{ comment.content }}</p>
-      {% if session.get("user_id") == comment.user_id %}
-        <a href="/edit_comment/{{ comment.id }}">Muokkaa</a>
-        <a href="/delete_comment/{{ comment.id }}">Poista</a>
-      {% endif %}
-    </div>
-  {% endfor %}
-   <p>
-    <a href="/">Takaisin</a>
-  </p>
-</body>
+<h1>{{ position.stock_name }}</h1>
 
-</html>
+{% if session.get("user_id") == position.user_id %}
+<p>
+  <a href="/edit_position/{{ position.id }}">Muokkaa</a>
+  <a href="/delete_position/{{ position.id }}">Poista</a>
+</p>
+{% else %}
+<p>Et ole kirjautunut.</p>
+{% endif %}
+
+<p>
+  Luokat:
+  <ul>
+    {% for class in classes %}
+      <li>{{ class.type }}: {{ class.value }}</li>
+    {% endfor %}
+  </ul>
+</p>
+
+<p>Ex-dividend date: {{ position.ex_dividend_date }}</p>
+<p>Record date: {{ position.record_date }}</p>
+<p>Payment date: {{ position.payment_date }}</p>
+<p>Description: {{ position.description }}</p>
+<p>Added by: <a href="/user/{{ position.user_id }}">{{ position.username }}</a></p>
+
+<hr>
+
+<h2>Kommentit</h2>
+
+<form action="/create_comment/{{ position.id }}" method="post">
+  <textarea name="content" required></textarea><br>
+  <input type="submit" value="Lähetä">
+</form>
+
+<hr>
+
+{% for comment in comments %}
+  <div class="comment">
+    <strong>
+      <a href="/user/{{ comment.user_id }}">
+        {{ comment.username }}
+      </a>
+    </strong>
+
+    <p>{{ comment.content }}</p>
+
+    {% if session.get("user_id") == comment.user_id %}
+      <a href="/edit_comment/{{ comment.id }}">Muokkaa</a>
+      <a href="/delete_comment/{{ comment.id }}">Poista</a>
+    {% endif %}
+  </div>
+{% endfor %}
+
+{% endblock %}

@@ -1,35 +1,39 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Uusi kohta</title>
-</head>
-<body>
-  <h1>Uusi kohta</h1>
-  <form action="/create_position" method="post">
-    <p>
-      Osakkeen nimi: <br />
-      <input type="text" name="stock_name" />
-    </p>
-    <p>
-      Ex dividend date: <br />
-      <input type="date" name="ex_dividend_date" />
-    </p>
-    <p>
-      Record date: <br />
-      <input type="date" name="record_date" />
-    </p>
-    <p>
-      Payment date: <br />
-      <input type="date" name="payment_date" />
-    </p>
-    <p>
-      Kommentti: <br />
-      <textarea name="description" rows="4" cols="30"></textarea>
-    </p>
-  
+{% block title %}Uusi kohta{% endblock %}
+
+{% block content %}
+
+<h1>Uusi kohta</h1>
+
+<form action="/create_position" method="post">
   <p>
-  {% for class in classes %}
+    Osakkeen nimi: <br />
+    <input type="text" name="stock_name" />
+  </p>
+
+  <p>
+    Ex dividend date: <br />
+    <input type="date" name="ex_dividend_date" />
+  </p>
+
+  <p>
+    Record date: <br />
+    <input type="date" name="record_date" />
+  </p>
+
+  <p>
+    Payment date: <br />
+    <input type="date" name="payment_date" />
+  </p>
+
+  <p>
+    Kommentti: <br />
+    <textarea name="description" rows="4" cols="30"></textarea>
+  </p>
+
+  <p>
+    {% for class in classes %}
     <p>
       {{ class }}: <br />
       <select name="classes">
@@ -39,8 +43,10 @@
         {% endfor %}
       </select>
     </p>
-  {% endfor %}
+    {% endfor %}
+
     <input type="submit" value="Luo uusi kohta" />
-  </form>
-</body>
-</html>
+  </p>
+</form>
+
+{% endblock %}

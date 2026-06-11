@@ -1,37 +1,19 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Osinko apuväline</title>
-</head>
+{% block title %}Etusivu{% endblock %}
 
-<body>
-  <h1>Osinko apuväline</h1>
-  {% if 'username' in session %}
-    <p>
-      Olet kirjautunut nimellä {{ session['username'] }}, id numerosi on {{session['user_id']}}
-    </p>
-  {% else %}
-    <p>Et ole kirjautunut.</p>
-  {% endif %}
-  
-  <p>
-    <a href="/login">Kirjaudu sisään</a>
-    <a href="/register">Luo tunnus</a>
-    <a href="/logout">Kirjaudu ulos</a>
-  </p>
-    <p>
-    <a href="/new_position">Uusi kohta</a>
-    <a href="/find_position">Etsi kohdetta</a>
-  </p>
-  <h2>Osake lista</h2>
-  <ul>
-    {% for position in positions %}
-    <li>
-      <a href="/positions/{{ position.id }}">{{ position.stock_name }}</a>
-    </li>
-    {% endfor %}
-  </ul>
-</body>
+{% block content %}
 
-</html>
+<h2>Osake lista</h2>
+
+<ul>
+  {% for position in positions %}
+  <li>
+    <a href="/positions/{{ position.id }}">
+      {{ position.stock_name }}
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

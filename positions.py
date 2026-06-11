@@ -2,11 +2,10 @@ import db
 
 def list_comments(db, position_id):
     sql = """
-        SELECT
-            c.id,
-            c.content,
-            c.user_id,
-            u.username
+        SELECT c.id,
+                c.content,
+                c.user_id,
+                u.username
         FROM comments c
         JOIN users u ON u.id = c.user_id
         WHERE c.position_id = ?
