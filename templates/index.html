@@ -6,14 +6,12 @@
 
 <h2>Osake lista</h2>
 
-<ul>
-  {% for position in positions %}
-  <li>
-    <a href="/positions/{{ position.id }}">
-      {{ position.stock_name }}
-    </a>
-  </li>
-  {% endfor %}
+{% for position in positions %}
+<div class="position">
+<a href="/positions/{{ position.id }}">{{ position.stock_name }}</a> <br/>
+Ilmoittaja: <a href="/user/{{ position.user_id }}">{{ position.username }} </a><br/>
+Osingon irtoamispäivä: <a>{{ position.ex_dividend_date }}</a> <br/>
+</div>
+{% endfor %}
 </ul>
-
 {% endblock %}

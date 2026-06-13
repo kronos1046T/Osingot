@@ -36,7 +36,10 @@ def add_position(user_id, stock_name, ex_dividend_date, record_date, payment_dat
         db.execute(sql, [position_id, type, value])
 
 def get_positions():
-    sql = "SELECT id, stock_name FROM positions ORDER BY id DESC"
+    sql = """SELECT positions.id, positions.stock_name, positions.ex_dividend_date, users.username, users.id AS user_id
+             FROM positions
+             JOIN users ON positions.user_id = users.id
+             ORDER BY positions.id DESC"""
     return db.query(sql)
 
 def get_classes(position_id):
