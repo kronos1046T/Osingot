@@ -1,10 +1,8 @@
 # Osingot
 
-## Välipalautus 2
+## Välipalautus 3
 
 Toisen välipalautuksen mennessä sovelluksen tavoittena oli perusvaatimusten täyttyminen. Tässä vaiheessa sovellus näyttää hyvin samantyyppiseltä kuin esimerkkisovellus.
-
----
 
 ## Kuvaus
 
@@ -20,8 +18,6 @@ Sovelluksessa tulee myös olla:
 - linkit tietojen lähteisiin (esim. Reuters tai TradingView)
 - mahdollisuus lisätä näitä linkkejä kohtien perään
 - CSS-design käyttöliittymän muotoiluun
-
----
 
 ## Käynnistäminen
 
