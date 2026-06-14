@@ -4,31 +4,31 @@
 
 {% block content %}
 
-<h1>Uusi kohta</h1>
+<h1>Uusi positio</h1>
 
 <form action="/create_position" method="post">
   <p>
     Osakkeen nimi: <br />
-    <input type="text" name="stock_name" />
+    <input type="text" name="stock_name" required />
   </p>
 
   <p>
-    Ex dividend date: <br />
-    <input type="date" name="ex_dividend_date" />
+    Osingon irtoamispäivä: <br />
+    <input type="date" name="ex_dividend_date" required/>
   </p>
 
   <p>
-    Record date: <br />
-    <input type="date" name="record_date" />
+    Täsmäytys päivä: <br />
+    <input type="date" name="record_date" required/>
   </p>
 
   <p>
-    Payment date: <br />
-    <input type="date" name="payment_date" />
+    Maksu päivä: <br />
+    <input type="date" name="payment_date" required/>
   </p>
 
   <p>
-    Kommentti: <br />
+    Kuvaus: <br />
     <textarea name="description" rows="4" cols="30"></textarea>
   </p>
 
