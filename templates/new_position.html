@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %}Uusi kohta{% endblock %}
+{% block title %}Uusi positio{% endblock %}
 
 {% block content %}
 
@@ -44,8 +44,8 @@
       </select>
     </p>
     {% endfor %}
-
-    <input type="submit" value="Luo uusi kohta" />
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input type="submit" value="Luo uusi positio" />
   </p>
 </form>
 

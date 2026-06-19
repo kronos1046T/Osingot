@@ -36,6 +36,7 @@
 
 <form action="/create_comment/{{ position.id }}" method="post">
   <textarea name="content" required></textarea><br>
+  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
   <input type="submit" value="Lähetä">
 </form>
 

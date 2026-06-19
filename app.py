@@ -6,9 +6,23 @@ import config
 import db
 import positions
 import users
+import secrets
 # test
 app = Flask(__name__)
 app.secret_key = config.secret_key
+
+
+def require_login():
+    if "user_id" not in session:
+        abort(403)
+
+def check_csrf():
+    if "csrf_token" not in request.form:
+        abort(403)
+    if "csrf_token" not in session:
+        abort(403)
+    if request.form["csrf_token"] != session["csrf_token"]:
+        abort(403)
 
 @app.route("/")
 def index():
@@ -66,6 +80,8 @@ def register():
 
 @app.route("/update_comment/<int:comment_id>", methods=["POST"])
 def update_comment(comment_id):
+    require_login()
+    check_csrf()
     content = request.form["content"]
     comment = db.query(
         "SELECT position_id, user_id FROM comments WHERE id = ?",
@@ -79,6 +95,8 @@ def update_comment(comment_id):
 
 @app.route("/create_comment/<int:position_id>", methods=["POST"])
 def create_comment(position_id):
+    require_login()
+    check_csrf()
     content = request.form["content"]
     db.execute(""" INSERT INTO comments (position_id, user_id, content) VALUES (?, ?, ?)""",
         (position_id, session["user_id"], content))
@@ -86,6 +104,10 @@ def create_comment(position_id):
 
 @app.route("/create_position", methods=["POST"])
 def create_position():
+    require_login()
+    if "csrf_token" not in session:
+        session["csrf_token"] = secrets.token_hex(16)
+    check_csrf()
     stock_name = request.form["stock_name"]
     ex_dividend_date = request.form["ex_dividend_date"]
     record_date = request.form["record_date"]
@@ -107,6 +129,8 @@ def create_position():
 
 @app.route("/update_position", methods=["POST"])
 def update_position():
+    require_login()
+    check_csrf()
     position_id = request.form["position_id"]
     stock_name = request.form["stock_name"]
     ex_dividend_date = request.form["ex_dividend_date"]
@@ -130,6 +154,8 @@ def create():
 
 @app.route("/delete_comment/<int:comment_id>", methods=["GET", "POST"])
 def delete_comment(comment_id):
+    require_login()
+    check_csrf()
     comment = db.query(
         "SELECT user_id, position_id FROM comments WHERE id = ?",
         [comment_id])[0]
@@ -140,16 +166,17 @@ def delete_comment(comment_id):
 
 @app.route("/delete_position/<int:position_id>", methods=["GET", "POST"])
 def delete_position(position_id):
+    require_login()
     if request.method == "GET":
         position = positions.get_position(position_id)
         return render_template("delete_position.html", position=position)
     if request.method == "POST":
+        check_csrf()  # Only check CSRF on POST
         if "delete" in request.form:
             positions.delete_position(position_id)
             return redirect('/')
         else:
             return redirect("/positions/" + str(position_id))
-
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -159,11 +186,13 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
 
+
     user = users.login_user(username, password)
 
     if user:
         session["user_id"] = user["id"]
         session["username"] = user["username"]
+        session["csrf_token"] = secrets.token_hex(16)
         return redirect("/")
 
     return "VIRHE: väärä tunnus tai salasana"
@@ -173,4 +202,5 @@ def login():
 def logout():
     session.pop("user_id", None)
     session.pop("username", None)
+    session.pop("csrf_token", None)
     return redirect("/")
