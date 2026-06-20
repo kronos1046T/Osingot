@@ -11,6 +11,10 @@ import secrets
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
+# (kieli: season vuodenaika, field toimiala?)
+# position muokkauksessa ei voi muokata vuodenaikaa tai toimialaa
+# kommentin muokkaus ei käytä sivupohjaa (layout)
+ # toisen käyttäjän positioita voi muokata tai poistaa
 
 def require_login():
     if "user_id" not in session:
@@ -171,7 +175,7 @@ def delete_position(position_id):
         position = positions.get_position(position_id)
         return render_template("delete_position.html", position=position)
     if request.method == "POST":
-        check_csrf()  # Only check CSRF on POST
+        check_csrf()  
         if "delete" in request.form:
             positions.delete_position(position_id)
             return redirect('/')

@@ -17,18 +17,19 @@
     <p>Et ole kirjautunut.</p>
   {% endif %}
 
-  <p>
-    <a href="/">Etusivu</a> |
-    <a href="/find_position">Etsi positiota</a> |
+<p>
+  <a href="/">Etusivu</a> |
+  <a href="/find_position">Etsi positiota</a> |
 
-    {% if 'username' in session %}
-      <a href="/new_position">Uusi positio</a> |
-      <a href="/logout">Kirjaudu ulos</a>
-    {% else %}
-      <a href="/login">Kirjaudu sisään</a> |
-      <a href="/register">Luo tunnus</a>
-    {% endif %}
-  </p>
+  {% if 'username' in session %}
+    <a href="/new_position">Uusi positio</a> |
+    <a href="/user/{{ session['user_id'] }}">Profiili</a> |
+    <a href="/logout">Kirjaudu ulos</a>
+  {% else %}
+    <a href="/login">Kirjaudu sisään</a> |
+    <a href="/register">Luo tunnus</a>
+  {% endif %}
+</p>
 
   {% for message in get_flashed_messages() %}
     <div class="info">
