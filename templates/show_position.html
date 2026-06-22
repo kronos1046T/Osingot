@@ -28,7 +28,7 @@
 <p>Täsmäytys päivä: {{ position.record_date }}</p>
 <p>Maksu päivä: {{ position.payment_date }}</p>
 <p>Kuvaus: {{ position.description }}</p>
-<p>Added by: <a href="/user/{{ position.user_id }}">{{ position.username }}</a></p>
+<p>Lisäänyt: <a href="/user/{{ position.user_id }}">{{ position.username }}</a></p>
 
 <hr>
 
@@ -52,10 +52,18 @@
 
     <p>{{ comment.content }}</p>
 
-    {% if session.get("user_id") == comment.user_id %}
-      <a href="/edit_comment/{{ comment.id }}">Muokkaa</a>
-      <a href="/delete_comment/{{ comment.id }}">Poista</a>
-    {% endif %}
+  {% if session.get("user_id") == comment.user_id %}
+    <a href="/edit_comment/{{ comment.id }}">Muokkaa</a>
+
+    <form action="/delete_comment/{{ comment.id }}"
+          method="post"
+          style="display:inline;">
+      <input type="hidden"
+            name="csrf_token"
+            value="{{ session.csrf_token }}">
+      <input type="submit" value="Poista">
+    </form>
+  {% endif %}
   </div>
 {% endfor %}
 

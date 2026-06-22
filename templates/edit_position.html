@@ -7,34 +7,74 @@
 <h1>Kohdan muokkaus</h1>
 
 <form action="/update_position" method="post">
+
   <p>
     Osakkeen nimi: <br />
-    <input type="text" name="stock_name" value="{{ position.stock_name }}"/>
+    <input type="text" name="stock_name"
+           value="{{ position.stock_name }}" />
   </p>
 
   <p>
     Ex dividend date: <br />
-    <input type="date" name="ex_dividend_date" value="{{ position.ex_dividend_date }}" />
+    <input type="date" name="ex_dividend_date"
+           value="{{ position.ex_dividend_date }}" />
   </p>
 
   <p>
     Record date: <br />
-    <input type="date" name="record_date" value="{{ position.record_date }}"/>
+    <input type="date" name="record_date"
+           value="{{ position.record_date }}" />
   </p>
 
   <p>
     Payment date: <br />
-    <input type="date" name="payment_date" value="{{ position.payment_date }}"/>
+    <input type="date" name="payment_date"
+           value="{{ position.payment_date }}" />
   </p>
 
   <p>
     Kommentti: <br />
-    <textarea name="description" rows="4" cols="30">{{ position.description }}</textarea>
+    <textarea name="description"
+              rows="4"
+              cols="30">{{ position.description }}</textarea>
   </p>
 
-  <input type="hidden" name="position_id" value="1" />
-  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+  <h3>Luokat</h3>
+
+  {% for class_type, values in all_classes.items() %}
+    <p>
+      {{ class_type }}:<br>
+
+      <select name="classes">
+        <option value="">-- valitse --</option>
+
+        {% for value in values %}
+          <option
+            value="{{ class_type }}:{{ value }}"
+            {% for current in classes %}
+              {% if current.type == class_type and current.value == value %}
+                selected
+              {% endif %}
+            {% endfor %}
+          >
+            {{ value }}
+          </option>
+        {% endfor %}
+      </select>
+    </p>
+  {% endfor %}
+
+  <input type="hidden"
+         name="position_id"
+         value="{{ position.id }}" />
+
+  <input type="hidden"
+         name="csrf_token"
+         value="{{ session.csrf_token }}" />
+
   <input type="submit" value="Päivitä kohta" />
+
 </form>
 
 {% endblock %}
+

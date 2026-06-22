@@ -63,7 +63,7 @@ def get_position(position_id):
     """
     return db.query(sql, [position_id])[0]
 
-def update_position(position_id, stock_name, ex_dividend_date, record_date, payment_date, description):
+def update_position(position_id, stock_name, ex_dividend_date, record_date, payment_date, description, classes):
     sql = """
         UPDATE positions
         SET stock_name = ?,
@@ -72,8 +72,13 @@ def update_position(position_id, stock_name, ex_dividend_date, record_date, paym
             payment_date = ?,
             description = ?
         WHERE id = ?
-        """
+    """
     db.execute(sql, [stock_name, ex_dividend_date, record_date, payment_date, description, position_id])
+    db.execute("DELETE FROM position_classes WHERE position_id = ?",[position_id])
+    for type, value in classes:
+        db.execute(
+            "INSERT INTO position_classes (position_id, type, value) VALUES (?, ?, ?)",
+            [position_id, type, value])
 
 def delete_position(position_id):
     db.execute("DELETE FROM comments WHERE position_id = ?", [position_id])
@@ -87,3 +92,26 @@ def find_positions(query):
         ORDER BY id DESC"""
     like = "%" + query + "%"
     return db.query(sql, [like, like])
+
+def get_comment(comment_id):
+    sql = "SELECT * FROM comments WHERE id = ?"
+    return db.query(sql, [comment_id])[0]
+
+
+def add_comment(position_id, user_id, content):
+    sql = """
+        INSERT INTO comments
+        (position_id, user_id, content)
+        VALUES (?, ?, ?)
+    """
+    db.execute(sql, [position_id, user_id, content])
+
+
+def update_comment(comment_id, content):
+    sql = "UPDATE comments SET content = ? WHERE id = ?"
+    db.execute(sql, [content, comment_id])
+
+
+def delete_comment(comment_id):
+    sql = "DELETE FROM comments WHERE id = ?"
+    db.execute(sql, [comment_id])

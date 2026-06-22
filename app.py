@@ -11,10 +11,8 @@ import secrets
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
-# (kieli: season vuodenaika, field toimiala?)
-# position muokkauksessa ei voi muokata vuodenaikaa tai toimialaa
-# kommentin muokkaus ei käytä sivupohjaa (layout)
- # toisen käyttäjän positioita voi muokata tai poistaa
+# app.py sisältää sql-lausekkeita, mieti jos ne voisi siirtää jonnekin muualle 
+# toisen käyttäjän positioita voi muokata tai poistaa
 
 def require_login():
     if "user_id" not in session:
@@ -66,13 +64,13 @@ def new_position():
 @app.route("/edit_position/<int:position_id>")
 def edit_position(position_id):
     position = positions.get_position(position_id)
-    return render_template("edit_position.html", position=position)
+    classes = positions.get_classes(position_id)
+    all_classes = positions.get_all_classes()
+    return render_template("edit_position.html", position=position, classes=classes , all_classes=all_classes)
 
 @app.route("/edit_comment/<int:comment_id>", methods=["GET"])
 def edit_comment(comment_id):
-    comment = db.query(
-        "SELECT * FROM comments WHERE id = ?",
-        [comment_id])[0]
+    comment = positions.get_comment(comment_id)
     if session.get("user_id") != comment["user_id"]:
         return "Ei oikeuksia", 403
     return render_template("edit_comment.html", comment=comment)
@@ -87,14 +85,10 @@ def update_comment(comment_id):
     require_login()
     check_csrf()
     content = request.form["content"]
-    comment = db.query(
-        "SELECT position_id, user_id FROM comments WHERE id = ?",
-        [comment_id])[0]
+    comment = positions.get_comment(comment_id)
     if session.get("user_id") != comment["user_id"]:
         return "Ei oikeuksia", 403
-    db.execute(
-        "UPDATE comments SET content = ? WHERE id = ?",
-        [content, comment_id])
+    positions.update_comment(comment_id, content)
     return redirect(f"/positions/{comment['position_id']}")
 
 @app.route("/create_comment/<int:position_id>", methods=["POST"])
@@ -102,8 +96,7 @@ def create_comment(position_id):
     require_login()
     check_csrf()
     content = request.form["content"]
-    db.execute(""" INSERT INTO comments (position_id, user_id, content) VALUES (?, ?, ?)""",
-        (position_id, session["user_id"], content))
+    positions.add_comment(position_id, session["user_id"], content)
     return redirect(f"/positions/{position_id}")
 
 @app.route("/create_position", methods=["POST"])
@@ -127,7 +120,7 @@ def create_position():
                 classes.append((parts[0], parts[1]))
     
     positions.add_position(user_id, stock_name, ex_dividend_date, 
-                          record_date, payment_date, description, classes)
+            record_date, payment_date, description, classes)
     return redirect("/")
 
 
@@ -141,9 +134,15 @@ def update_position():
     record_date = request.form["record_date"]
     payment_date = request.form["payment_date"]
     description = request.form["description"]
+    
+    classes = []
+    for entry in request.form.getlist("classes"):
+        if entry and ":" in entry:
+            type, value = entry.split(":", 1)
+            classes.append((type, value))
 
-    positions.update_position(position_id, stock_name, ex_dividend_date, record_date, payment_date, description)
-
+    positions.update_position(position_id, stock_name, ex_dividend_date, record_date, 
+                                payment_date, description, classes)
     return redirect("/positions/" + str(position_id))
 
 @app.route("/create", methods=["POST"])
@@ -153,19 +152,16 @@ def create():
     password2 = request.form["password2"]
 
     result = users.create_user(username, password1, password2)
-
     return result
 
-@app.route("/delete_comment/<int:comment_id>", methods=["GET", "POST"])
+@app.route("/delete_comment/<int:comment_id>", methods=["POST"])
 def delete_comment(comment_id):
     require_login()
     check_csrf()
-    comment = db.query(
-        "SELECT user_id, position_id FROM comments WHERE id = ?",
-        [comment_id])[0]
+    comment = positions.get_comment(comment_id)
     if session.get("user_id") != comment["user_id"]:
         return "Ei oikeuksia", 403
-    db.execute("DELETE FROM comments WHERE id = ?", [comment_id])
+    positions.delete_comment(comment_id)
     return redirect(f"/positions/{comment['position_id']}")
 
 @app.route("/delete_position/<int:position_id>", methods=["GET", "POST"])

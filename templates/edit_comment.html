@@ -1,8 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}Muokkaa kommenttia{% endblock %}
+
+{% block content %}
+
 <h2>Muokkaa kommenttia</h2>
 
 <form action="/update_comment/{{ comment.id }}" method="post">
-    <textarea name="content" required>{{ comment.content }}</textarea>
-    <br>
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
-    <input type="submit" value="Update">
+  <p>
+    <textarea name="content" rows="6" cols="50" required>{{ comment.content }}</textarea>
+  </p>
+
+  <input type="hidden"
+         name="csrf_token"
+         value="{{ session.csrf_token }}" />
+
+  <input type="submit" value="Päivitä kommentti">
 </form>
+{% endblock %}
+
