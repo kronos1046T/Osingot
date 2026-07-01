@@ -11,8 +11,6 @@ import secrets
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
-# app.py sisältää sql-lausekkeita, mieti jos ne voisi siirtää jonnekin muualle 
-# toisen käyttäjän positioita voi muokata tai poistaa
 
 def require_login():
     if "user_id" not in session:
